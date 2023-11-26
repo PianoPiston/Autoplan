@@ -4,7 +4,7 @@ from openai import OpenAI
 import time
 
 client = OpenAI(
-    api_key = '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',
+    api_key = 'replace this api key with the api key!!!',
 )
 
 instruction_set = """
