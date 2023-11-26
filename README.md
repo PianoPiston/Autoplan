@@ -33,9 +33,13 @@ I want to buy my own domain someday so I can host the tool on my personal site. 
 # How to run
 
 Requirements:
+
 pip3 install django
+
 pip3 install openai
 
 to run:
+
 cd scheduler
+
 python3 manage.py runserver
