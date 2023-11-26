@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autoplan</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f7f7f7;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #container {
+      background-color: #fff;
+      padding: 5px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      text-align: center;
+      margin: 3px;
+    }
+
+    #messageInput {
+      width: 600px;
+      padding: 10px;
+      padding-bottom: 20px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border: 1px solid #4caf50;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    #submitButton {
+      padding: 12px;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #responseContainer {
+      font-size: 16px;
+      font-family: 'Arial', sans-serif;
+      width: 580px;
+      min-height: 20px;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      line-height: 20px;
+    }
+
+    #bigbanner {
+      font-family: 'Arial', sans-serif;
+      font-size: 50px;
+      color: #4caf50;
+      margin-bottom: 3px;
+    }
+
+    #bannerDesc {
+      margin-top: 3px;
+      margin-bottom: 25px;
+      font-size: 12px;
+    }
+
+    #pomodoroCheckbox {
+      margin-right: 5px;
+    }
+
+    #timeLimitInput {
+      width: 150px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+
+    }
+
+    #additionalInput {
+      width: 350px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+
+    }
+
+    #descriptionBox {
+      margin-right: 488px;
+      margin-bottom: 0px;  
+    }
+
+    #exampleBox {
+      margin-bottom: 5px; 
+      margin-top: 0px;
+      font-size: 10px;
+      color: #8f998f; 
+    }
+
+    #loading {
+      color:rgb(95, 145, 95);
+      margin-left: 5px;
+    }
+
+
+  </style>
+  
+</head>
+<body>
+    {%csrf_token%}
+    <p id="bigbanner">Autoplan</p>
+    <p id="bannerDesc">AI powered automated schedule generator</p>
+    <p id="descriptionBox">Tasks for today:</p>
+    <p id="exampleBox" style="margin-right: 115px;">Input your tasks for today, and the schedule generator will create a timetable for you according to your needs!</p>
+    <input type="text" id="messageInput" placeholder="Go to the gym, piano 1h 30m, fix bike, maths test 3h">
+    <div id="container">
+      <input type="checkbox" id="pomodoroCheckbox"> Use Pomodoro Technique
+    </div>
+    <div id="container">
+      Optional additional specification: <input type="text" id="additionalInput" placeholder="20min breaks, priority: piano, lunch 11:50 etc.">
+    </div>
+    <div id="container">
+      Optional time specification: <input type="text" id="timeLimitInput" placeholder="8:00 to 17:00">
+    </div>
+    
+    <button id="submitButton" onclick="submitMessage()">Submit</button>
+    <div id="loading"></div>
+
+    <div id="responseContainer"></div>
+
+    <script>
+        function submitMessage() {
+        let message = document.getElementById('messageInput').value;
+        const pomodoroCheckbox = document.getElementById('pomodoroCheckbox');
+        const timeLimitInput = document.getElementById('timeLimitInput').value;
+        const additionalInput = document.getElementById('additionalInput').value;
+        const loadingTimeDisplay = document.getElementById('loading').value;
+
+        let additionScheduleStyle = '';
+        let additionScheduleTimeLimit = '';
+        let additionScheduleAddition = '';
+
+        if (pomodoroCheckbox.checked) {
+          additionScheduleStyle = 'Use a Pomodoro Technique.';
+        }
+
+        if (timeLimitInput) {
+          additionScheduleTimeLimit = `(Make the schedule in this time period: ${timeLimitInput} minutes)`;
+        }
+
+        if (additionalInput) {
+          additionScheduleAddition = `make sure to use: ${additionalInput} please!`;
+        }
+
+        // Append additional information to the message if not empty
+        if (additionScheduleStyle) {
+          message += `\n${additionScheduleStyle}`;
+        }
+
+        if (additionScheduleAddition) {
+          message += `\n${additionScheduleAddition}`;
+        }
+
+        if (additionScheduleTimeLimit) {
+          message += `\n${additionScheduleTimeLimit}`;
+        }
+
+        let loadingElement = document.getElementById('loading');
+        loadingElement.innerText = 'Loading...';
+
+        fetch('', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+            'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'message': message
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+            const response = data.response;
+            alert(response);
+            document.getElementById('responseContainer').innerText = response;
+            })
+            .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing your request.');
+            })
+            .finally(() => {
+              // Remove loading text
+              loadingElement.innerText = '';
+            });
+        }
+    </script>
+
+</body>
+</html>
