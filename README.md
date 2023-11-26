@@ -29,3 +29,13 @@ I learned how debug in more efficient ways, i learned more about how django is s
 # What's next for Autoplan
 
 I want to buy my own domain someday so I can host the tool on my personal site. This tool will help me in many ways and I will try to expand it even further.
+
+# How to run
+
+Requirements:
+pip3 install django
+pip3 install openai
+
+to run:
+cd scheduler
+python3 manage.py runserver
