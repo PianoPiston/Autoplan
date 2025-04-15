@@ -2,6 +2,8 @@
 AI powered automated schedule generator.
 My entry into the clockhacks international hackathon
 
+![autoplan](https://github.com/user-attachments/assets/d5f2f6a5-0364-41fd-a00a-28b48746323e)
+
 # Inspiration
 One of the most recommended and easy ways to defeat, or lessen the effect of procrastination and time management issues is to create a schedule. The schedule not only sorts out your tasks, but also helps to create a good mental image of the tasks ahead. 
 
